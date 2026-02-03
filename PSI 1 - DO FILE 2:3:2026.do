@@ -9,11 +9,10 @@
 * 2. State Unemployment Rates, 2024
 *    Source: BLS Local Area Unemployment Statistics (via FRED)
 ****************************************************
-*download https://drive.google.com/file/d/17LT9VIo073pp1gbG7jHns4rm4mRc-igl/view?usp=drive_link
-*https://drive.google.com/file/d/15MNFCGfZN6GtcIyYflYowdisHG9GxGka/view?usp=drive_link
-import delimited ///
+ 
+import delimited https://drive.google.com/file/d/17LT9VIo073pp1gbG7jHns4rm4mRc-igl/view?usp=drive_link///
  "injury_rates_2024.csv", ///
-clear varnames(1)
+clear varnames(1) rowrange(3), clear
 
 *rename variables
 rename area state_name
@@ -29,9 +28,9 @@ tabulate state_name
 save "injury_rates_2024.dta", replace
 
 *second data set 
-import delimited ///
+import delimited https://drive.google.com/file/d/17LT9VIo073pp1gbG7jHns4rm4mRc-igl/view?usp=drive_link ///
  "number_unemployment_2025.csv", ///
-clear varnames(1)
+clear varnames(1) rowrange(3), clear
 rename unemployedpersonsperjobopeningra unemployed
 save "number_unemployment_2025.dta", replace
 *MERGE
