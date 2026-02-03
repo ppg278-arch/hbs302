@@ -1,0 +1,79 @@
+{smcl}
+{com}{sf}{ul off}{txt}{.-}
+      name:  {res}<unnamed>
+       {txt}log:  {res}/Users/lindseymcdaniel/Desktop/PS1 - 1 HOMEWORK.smcl
+  {txt}log type:  {res}smcl
+ {txt}opened on:  {res}31 Jan 2026, 12:19:24
+
+{com}. do "/Users/lindseymcdaniel/Downloads/data-table (1).csv"
+{txt}
+{com}. ﻿YEAR,Location,Death Rate,"Deaths ",URL
+{bf}{err}﻿YEAR{sf} is not a valid command name
+{txt}{search r(199), local:r(199);}
+
+end of do-file
+
+{search r(199), local:r(199);}
+
+{com}. 
+. 
+. import excel "/Users/lindseymcdaniel/Downloads/data-table (1)- CDC mortality rate.xlsx", sheet("Sheet 1 - data-table (1)")
+{res}{text}(5 vars, 504 obs)
+
+{com}. sum
+
+{txt}    Variable {c |}        Obs        Mean    Std. dev.       Min        Max
+{hline 13}{c +}{hline 57}
+{space 11}A {c |}{res}          0
+{txt}{space 11}B {c |}{res}          0
+{txt}{space 11}C {c |}{res}          0
+{txt}{space 11}D {c |}{res}          0
+{txt}{space 11}E {c |}{res}          0
+
+{com}. 
+. import excel "/Users/lindseymcdaniel/Downloads/gun_deaths_ethnicity_race_type_year-2026-01-31.xlsx", sheet("Sheet 1 - gun_deaths_ethnicity_") clear
+{res}{text}(8 vars, 758 obs)
+
+{com}. sum
+
+{txt}    Variable {c |}        Obs        Mean    Std. dev.       Min        Max
+{hline 13}{c +}{hline 57}
+{space 11}A {c |}{res}          0
+{txt}{space 11}B {c |}{res}          0
+{txt}{space 11}C {c |}{res}          0
+{txt}{space 11}D {c |}{res}          0
+{txt}{space 11}E {c |}{res}          0
+{txt}{hline 13}{c +}{hline 57}
+{space 11}F {c |}{res}          0
+{txt}{space 11}G {c |}{res}          0
+{txt}{space 11}H {c |}{res}          0
+
+{com}. do "/var/folders/hn/jthx73495lj313dfqt7lkd280000gn/T//SD01522.000000"
+{txt}
+{com}. /********************************************************************
+>   Project: Problem Set 1
+>   Author: Lindsey McDaniel
+>   Course: HBS 302       
+>   Date: February 2026
+> *****************/
+.   
+. import delimited  import excel "/Users/lindseymcdaniel/Downloads/data-table (1)- CDC mortality rate.xlsx"
+{err}using required
+{txt}{search r(100), local:r(100);}
+
+end of do-file
+
+{search r(100), local:r(100);}
+
+{com}. close
+{err}command {bf}close{sf} is unrecognized
+{txt}{search r(199), local:r(199);}
+
+{com}. log close
+      {txt}name:  {res}<unnamed>
+       {txt}log:  {res}/Users/lindseymcdaniel/Desktop/PS1 - 1 HOMEWORK.smcl
+  {txt}log type:  {res}smcl
+ {txt}closed on:  {res} 1 Feb 2026, 17:19:10
+{txt}{.-}
+{smcl}
+{txt}{sf}{ul off}
