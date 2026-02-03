@@ -9,6 +9,8 @@
 * 2. State Unemployment Rates, 2024
 *    Source: BLS Local Area Unemployment Statistics (via FRED)
 ****************************************************
+*download https://drive.google.com/file/d/17LT9VIo073pp1gbG7jHns4rm4mRc-igl/view?usp=drive_link
+*https://drive.google.com/file/d/15MNFCGfZN6GtcIyYflYowdisHG9GxGka/view?usp=drive_link
 import delimited ///
  "injury_rates_2024.csv", ///
 clear varnames(1)
