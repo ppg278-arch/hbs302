@@ -10,8 +10,7 @@
 *    Source: BLS Local Area Unemployment Statistics (via FRED)
 ****************************************************
  
-import delimited https://https://drive.google.com/uc?export=download&id=17LT9VIo073pp1gbG7jHns4rm4mRc-igl///
- "injury_rates_2024.csv", ///
+import delimited https://"https://drive.google.com/uc?export=download&id=17LT9VIo073pp1gbG7jHns4rm4mRc-igl", ///, ///
 clear varnames(1) rowrange(3), clear
 
 *rename variables
