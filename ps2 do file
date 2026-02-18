@@ -1,0 +1,92 @@
+*PS2 DO FILE - OVERDOSE RATES 
+ *LINDSEY MCDANIEL 2/17 
+ 
+ *FIRST IMPORT THE Datasets / download them from google drive on computer 
+ 
+import delimited /// 
+ "/Users/lindseymcdaniel/Desktop/PolicyMap Data 2026-02-17 181741 UTC.csv" , ///
+varnames(1) rowrange(3) clear
+
+describe
+*rename variables 
+rename geographyname region
+rename drugoverdosedeathsper100000peopl OD1000
+
+*destring variables to ADD 
+destring OD1000, replace ignore(",% ")
+describe
+capture confirm numeric variable ODrate
+if _rc destring OD1000, replace ignore(",% ")
+
+*SAVE CLEAN DATA SET
+save policymap1_clean.dta, replace
+
+*BEGIN TO MERGE THE TWO DATASETS- DOWNLOAD SECOND 
+*SECOND DATASET IS OVERDOSES HIGHER THAN 38 IN SPECIFIC REGION
+import delimited ///
+"/Users/lindseymcdaniel/Desktop/PolicyMap Data 2026-02-17 183830 UTC.csv" , ///
+varnames(1) rowrange(3) clear
+*RENAME VARIABLES TO MATCH FOR THE MERGE
+rename drugoverdosedeathsper100000peopl OD1000
+
+
+destring OD1000, replace ignore(",% ")
+save policymap2_clean.dta, replace
+*now merge the two datasets
+use policymap1_clean.dta, clear
+sort OD1000
+merge 1:1 OD1000 using policymap2_clean.dta
+tab OD1000
+drop _merge
+
+
+*SAVE NEW DATASET
+save policymap_merged.dta, replace
+*TABLES 
+*TAB SHOWS THE PERCENT THAT IS WITHIN EACH STATE NEAR TENNESSEEE
+*shows the number and percent of observations in vs out of state
+tab sitsinstate
+*CROSS TABULATION FOR OD1000
+summ OD1000
+gen high_od = OD1000 > r(p50)
+label define highod 0 "Low OD Rate" 1 "High OD Rate"
+label values high_od highod
+*shows the high od rates in state
+tab high_od sitsinstate, row
+tab sitsinstate, summarize(OD1000)
+
+*showing kentucky with the highest mean of od rates 
+*GRAPHING THE DATASETS 
+*pie charts
+use policymap_merged.dta, clear
+graph pie, over(sitsinstate) ///
+    title("Distribution by In-State Status")
+label define sitlbl 0 "Out-of-State" 1 "In-State"
+label values sitsinstate sitlbl
+
+graph pie, over(sitsinstate) ///
+    title("Distribution by In-State Status")
+*graph shows kentucky taking over majority of graph similar to how it was showing on the mean in the previous frequency table. the pie chart allows you to see easier how much kentuck takes over the graph. 
+
+*BAR CHART
+graph bar (mean) OD1000, over(sitsinstate) ///
+    blabel(bar, format(%4.1f)) ///
+    title("Average OD Rate by In-State Status") ///
+    ytitle("Average OD Rate") ///
+    legend(off)
+*the bar chart shows the average overdose in state status // shows whether they differ in state vs out of state
+
+*taking the bar chart further with colors, axis, and size 
+graph bar (mean) OD1000, over(sitsinstate) ///
+    bar(1, color(navy)) ///
+    bar(2, color(maroon)) ///
+    blabel(bar, format(%4.1f) size(medsmall)) ///
+    ytitle("Average Overdose Rate per 100,000", size(medium)) ///
+    title("Average Overdose Rate by In-State Status", size(large)) ///
+    graphregion(color(white)) ///
+    plotregion(color(white)) ///
+    legend(off) ///
+    ysize(5) xsize(7)
+	
+
+*each of these charts allows you to see how these OD rates change within states that border tennesseee
