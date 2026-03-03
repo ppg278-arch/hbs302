@@ -1,0 +1,77 @@
+**Lindsey McDaniel // 
+**PS3 - HBS 302
+**USING A PREVIOUS POLICYMAP MERGED DATASET I WILL BE CREATING REGRESSION LINES AND SCATTER PLOTS TO VISUALIZE REGRESSION RELATIONSHIPS****
+
+**import the merged dataset 
+use "/Users/lindseymcdaniel/Desktop/policymap_merged.dta", clear
+
+**The dependent variable in this dataset id the OD1000 which represents the drug overdose rate. 
+**it is dependent because it is continous, and represents the outcome we are trying to explain in this set 
+
+
+**the second independent variable is region // tests whether overdose rates differ by geographic region
+
+
+**Hypothesis: Overdose rates differ significantly across regions 
+
+**Estimate model 
+encode region, gen(region_id)
+regress OD1000 datatimeperiod 
+tab region_id
+list region in 1/10
+
+describe OD1000 datatimeperiod
+regress OD1000 region_id
+summarize OD1000 
+*after running we see that 12.7% of variation in overdose rates
+*this set is marginally signifcant as it is slightly above 0.05
+**the average overdose rate in the baseline region is about 67.14 per 100,000
+**overall the regression shows that 13% of the variation in overdose mortality across the different regions 
+
+// NOW CREATE A SCATTER PLOT// 
+twoway ///
+(scatter OD1000 region_id, ///
+    msize(medium) ///
+    mcolor(navy)) ///
+(lfit OD1000 region_id, ///
+    lcolor(maroon) ///
+    lwidth(medthick)), ///
+title("Regional Differences in Overdose Rates (2021)") ///
+xtitle("Region (Encoded Categories)") ///
+ytitle("Overdose Rate per 100,000") ///
+legend(order(1 "Observed Values" 2 "Fitted Regression Line"))
+
+// the scatter plot shows a downward trend in overdose rates across regions. this pattern aligns with the regression results
+// the plot shows that overall rates differ within different regions which agrees with our hypothesis
+
+//MARGINS PLOT // 
+regress OD1000 i.region_id
+margins region_id
+marginsplot, ///
+title("Predicted Overdose Rates by Region (2021)") ///
+xtitle("Region") ///
+ytitle("Predicted Overdose Rate per 100,000")
+**The margins plot allows us to see the predicted overdose per region and their confidence intervals. From the margins plot we find that region explains only limited portions of variation
+
+*EXPORTING REGRESSION TABLE 
+ssc install estout, replace
+regress OD1000 i.region_id
+**this estimated a linear regression model / if overdose rates differ across region
+est store Model1
+estimates dir
+** by saving the Model1 we saved those results in memory under this model which will allow us to export it later
+esttab Model1 using "OD_regression_table.rtf", ///
+replace se ///
+star(* 0.10 ** 0.05 *** 0.01) ///
+title("Overdose Rate Regression by Region (2021)") ///
+label
+
+**this exported table now contains the Rsquared, standard errors, coefficients into a professional place that can be easily accessed 
+**preps the results for policy interpretation
+
+**INTERPRETATION**
+// From these results it would suggest that overdose rates vary across regions in 2021.//
+// the visualization helped clarify the regression results but the margins plot even better helped the results. it allowed for me to easily see the variation// 
+
+***NEXT STEPS
+// I would add some sort of additional explanatory variable such as socioeconomic controls, or policy variables related to treatment and prevention// 
