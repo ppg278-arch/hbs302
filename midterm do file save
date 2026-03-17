@@ -8,7 +8,47 @@
 
 clear all
 set more off
+*****************************************
+*MERGING YOUR DATASETS***********
 
+import delimited /// 
+ "/Users/lindseymcdaniel/Desktop/PolicyMap Data 2026-02-17 181741 UTC.csv" , ///
+varnames(1) rowrange(3) clear
+
+*Rename your variables so they can match with the other ones in your second dataset 
+describe
+*the desrcibe also shows you your string variables 
+*rename variables 
+rename geographyname region
+rename drugoverdosedeathsper100000peopl OD1000
+
+*destring the varibales you want to use for your research 
+destring OD1000, replace ignore(",% ")
+describe
+capture confirm numeric variable ODrate
+if _rc destring OD1000, replace ignore(",% ")
+
+**MUST SAVE YOUR NEW DATASETS
+save policymap1_clean.dta, replace
+
+****TO MERGE YOU NEED TWO DATASETS SO NOW WE WILL USE THE SECOND ONE*******
+import delimited ///
+"/Users/lindseymcdaniel/Desktop/PolicyMap Data 2026-02-17 183830 UTC.csv" , ///
+varnames(1) rowrange(3) clear
+
+*RENAME VARIABLES TO MATCH FOR THE MERGE
+rename drugoverdosedeathsper100000peopl OD1000
+destring OD1000, replace ignore(",% ")
+save policymap2_clean.dta, replace
+
+*now merge the two datasets
+use policymap1_clean.dta, clear
+sort OD1000
+merge 1:1 OD1000 using policymap2_clean.dta
+tab OD1000
+drop _merge
+*SAVE NEW DATASET
+save policymap_merged.dta, replace
 ***************************************************************
 * SECTION 1. CLEAN DATA
 * In this section, I import the raw data and clean variables
