@@ -1,0 +1,182 @@
+***************************************************************
+* MIDTERM PROJECT DO-FILE
+* Lindsey McDaniel
+* Topic: Regional Differences in Drug Overdose Rates
+* Purpose: Clean PolicyMap data, structure it for analysis,
+* visualize overdose patterns, and estimate an early regression.
+***************************************************************
+
+clear all
+set more off
+
+***************************************************************
+* SECTION 1. CLEAN DATA
+* In this section, I import the raw data and clean variables
+* so they are usable in Stata. This follows the course rule:
+* Clean Data first before doing anything else.
+***************************************************************
+
+*Import the merged PolicyMap dataset from my desktop. 
+*The datasets being merged are the PolicyMap datasets about overdose rates in different regions. 
+use "/Users/lindseymcdaniel/Desktop/policymap_merged.dta", clear
+
+*Inspect the dataset structure 
+describe
+
+*Look at the first few observations 
+list in 1/5
+
+***************************************************************
+* SECTION 2: DESCRIBE KEY VARIABLES
+* The dependent variable is OD1000, which represents the
+* overdose death rate per 100,000 people.
+***************************************************************
+*Summary statistics for overdose rates 
+summarize OD1000
+
+*Examine geographic status value
+tab sitsinstate
+
+*View average overdose rates by state status 
+tab sitsinstate, summarize(OD1000)
+
+***************************************************************
+* SECTION 3: CREATE VARIABLES
+* Create variables that help structure the dataset for analysis.
+***************************************************************
+*Convert region variable to numeric ID for regression 
+encode region, gen(region_id)
+
+*Inspect the region categories 
+tab region_id
+list region region_id in 1/10
+
+*Create a variable identifying high overdose rates
+summarize OD1000
+gen high_od = OD1000 > r(p50)
+
+*Label the binary variable
+label define highod 0 "Low OD Rate" 1 "High OD Rate"
+label values high_od highod
+
+*Cross tabulation of overdose category and location
+tab high_od sitsinstate, row
+
+***************************************************************
+* SECTION 4: VISUALIZE DATA
+* Visualization helps identify patterns before modeling.
+***************************************************************
+
+*Sits in state is a string variable so in order for us to use it in this dataset we must make it a numeric categorical variable 
+encode sitsinstate, gen(sitsinstate_id)
+drop sitsinstate
+rename sitsinstate_id sitsinstate
+
+*Check the encoded variable
+tab sitsinstate
+*Label each part 
+label define sitlbl 1 "Out-of-State" 2 "In-State", replace
+label values sitsinstate sitlbl
+list sitsinstate if sitsinstate==3
+drop if sitsinstate==3
+tab sitsinstate
+
+*Now stata will show that 1= out of state and 2 = in state 
+*PIE CHART 
+*Shows the distribution of in-state vs out of state observations
+graph pie, over(sitsinstate) ///
+title("Distribution by In-State Status")
+
+*Bar Chart
+*shows average overdose rates by state status 
+graph bar (mean) OD1000, over(sitsinstate) asyvars ///
+bar(1, color(navy)) ///
+bar(2, color(maroon)) ///
+blabel(bar, format(%4.1f) size(medsmall)) ///
+ytitle("Average Overdose Rate per 100,000", size(medium)) ///
+title("Average Overdose Rate by In-State Status", size(large)) ///
+graphregion(color(white)) ///
+plotregion(color(white)) ///
+legend(off) ///
+ysize(5) xsize(7)
+
+***************************************************************
+* SECTION 5: SCATTER PLOT
+* Visualizing the relationship between region and overdose rates.
+***************************************************************
+*Scatter Plot 
+*showing the relationship between region and overdose 
+twoway ///
+(scatter OD1000 region_id, ///
+    msize(medium) ///
+    mcolor(navy)) ///
+(lfit OD1000 region_id, ///
+    lcolor(maroon) ///
+    lwidth(medthick)), ///
+title("Regional Differences in Overdose Rates (2021)") ///
+xtitle("Region (Encoded Categories)") ///
+ytitle("Overdose Rate per 100,000") ///
+legend(order(1 "Observed Values" 2 "Fitted Regression Line"))
+*shows a downward slope showing that overdose rates increase across regions but regions alone do not fully explain the variation in our data
+
+***************************************************************
+* SECTION 6: REGRESSION MODEL
+* Hypothesis: Overdose rates differ across regions.
+***************************************************************
+*Estimate regression model
+regress OD1000 i.sitsinstate
+
+*Interpret R-Squared and coefficients 
+summarize OD1000
+
+***************************************************************
+* SECTION 7: PREDICTED VALUES USING MARGINS
+* Margins help visualize predicted overdose rates by whether it sits in state or out
+***************************************************************
+
+*the regions category has too many counties for a margins plot on our graph, so we used a much simpler variable of sitsinstate. Even though it is less variation it gives us full coverage of the data. 
+margins sitsinstate
+
+*Create a margins plot to help us visualize the predicted rates of overdoses in each of our regions 
+marginsplot, ///
+title("Predicted Overdose Rates by In-State or Out of-State (2021)") ///
+xtitle("In or Out") ///
+ytitle("Predicted Overdose Rate per 100,000")
+
+***************************************************************
+* SECTION 8: EXPORT REGRESSION RESULTS
+* Export regression results for reporting.
+***************************************************************
+ssc install estout, replace
+
+regress OD1000 i.region_id
+est store Model1
+
+estimates dir
+
+esttab Model1 using "OD_regression_table.rtf", ///
+replace se ///
+star(* 0.10 ** 0.05 *** 0.01) ///
+title("Overdose Rate Regression by Region (2021)") ///
+label
+
+***************************************************************
+* SECTION 9: INTERPRETATION
+***************************************************************
+
+* Preliminary results suggest overdose rates differ by region.
+* However, regional differences explain only a limited share
+* of overall variation in overdose mortality.
+
+* Visualizations such as the scatter plot and margins plot
+* help illustrate these regional differences.
+
+* Future analysis will add additional explanatory variables,
+* such as socioeconomic factors or health policy variables.
+
+*Explain more in class with each of these and why we needed to use different variables in different plots to help our dataset make sense
+
+*we want to see whether the region or area have an affect on overdose rates in 2021
+***************************************************************
+* END OF DO-FILE
+***************************************************************
